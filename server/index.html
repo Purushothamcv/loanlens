@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction API - Test Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .error {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .hidden {
+            display: none;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏦 Loan Prediction System</h1>
+        
+        <form id="loanForm">
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="married">Marital Status:</label>
+                <select id="married" required>
+                    <option value="">Select Status</option>
+                    <option value="No">Single</option>
+                    <option value="Yes">Married</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="dependents">Number of Dependents:</label>
+                <select id="dependents" required>
+                    <option value="">Select Dependents</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">3+</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="education">Education:</label>
+                <select id="education" required>
+                    <option value="">Select Education</option>
+                    <option value="Not Graduate">Not Graduate</option>
+                    <option value="Graduate">Graduate</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="selfEmployed">Self Employed:</label>
+                <select id="selfEmployed" required>
+                    <option value="">Select Status</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="applicantIncome">Applicant Income ($):</label>
+                <input type="number" id="applicantIncome" required min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="coapplicantIncome">Coapplicant Income ($):</label>
+                <input type="number" id="coapplicantIncome" required min="0" step="0.01" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="loanAmount">Loan Amount ($):</label>
+                <input type="number" id="loanAmount" required min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="loanTerm">Loan Term (days):</label>
+                <input type="number" id="loanTerm" required min="0" step="1" value="360">
+            </div>
+
+            <div class="form-group">
+                <label for="creditHistory">Credit History:</label>
+                <select id="creditHistory" required>
+                    <option value="">Select Credit History</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="propertyArea">Property Area:</label>
+                <select id="propertyArea" required>
+                    <option value="">Select Area</option>
+                    <option value="Rural">Rural</option>
+                    <option value="Semiurban">Semiurban</option>
+                    <option value="Urban">Urban</option>
+                </select>
+            </div>
+
+            <button type="submit">Predict Loan Status</button>
+        </form>
+
+        <div id="loading" class="loading hidden">
+            <p>Processing your application...</p>
+        </div>
+
+        <div id="result" class="result hidden"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loanForm');
+        const loadingDiv = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            loadingDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            // Collect form data
+            const formData = {
+                Gender: document.getElementById('gender').value,
+                Married: document.getElementById('married').value,
+                Dependents: parseInt(document.getElementById('dependents').value),
+                Education: document.getElementById('education').value,
+                Self_Employed: document.getElementById('selfEmployed').value,
+                ApplicantIncome: parseFloat(document.getElementById('applicantIncome').value),
+                CoapplicantIncome: parseFloat(document.getElementById('coapplicantIncome').value),
+                LoanAmount: parseFloat(document.getElementById('loanAmount').value),
+                Loan_Amount_Term: parseFloat(document.getElementById('loanTerm').value),
+                Credit_History: document.getElementById('creditHistory').value,
+                Property_Area: document.getElementById('propertyArea').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                loadingDiv.classList.add('hidden');
+                
+                if (response.ok) {
+                    // Show result
+                    const isApproved = result.loan_status === 1;
+                    resultDiv.className = `result ${isApproved ? 'approved' : 'rejected'}`;
+                    resultDiv.innerHTML = `
+                        <h3>${isApproved ? '✅ Loan Approved!' : '❌ Loan Not Approved'}</h3>
+                        <p><strong>Status:</strong> ${result.loan_status_text}</p>
+                        <p><strong>Confidence:</strong> ${(result.probability * 100).toFixed(2)}%</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${result.detail || 'An error occurred'}</p>`;
+                }
+                
+                resultDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                // Hide loading
+                loadingDiv.classList.add('hidden');
+                
+                // Show error
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>Connection Error</h3>
+                    <p>Could not connect to the prediction service. Please make sure the API server is running.</p>
+                    <p><small>Error: ${error.message}</small></p>
+                `;
+                resultDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

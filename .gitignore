@@ -1,0 +1,29 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+dist/
+build/
+.DS_Store
+*.log
+*.pkl
+.vscode/
+.idea/
+*.csv
+
+# Environment files
+server/.env
+frontend/.env
+
+# Production builds
+frontend/dist/
+server/build/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
