@@ -1,12 +1,11 @@
 services:
   - type: web
     name: loanlens-api
-    runtime: python3
+    rootDir: server
     buildCommand: |
-      cd server
       pip install --upgrade pip
       pip install -r requirements.txt
-    startCommand: cd server && uvicorn api:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.7
