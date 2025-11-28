@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: loanlens-api
+    runtime: python3
+    buildCommand: |
+      cd server
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: cd server && uvicorn api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: PORT
+        value: 8000
+      - key: HOST
+        value: 0.0.0.0
+      - key: MODEL_PATH
+        value: loan_model.pkl
+      - key: CORS_ORIGINS
+        value: "*"
