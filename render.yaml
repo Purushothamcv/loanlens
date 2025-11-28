@@ -4,9 +4,16 @@ services:
     rootDir: server
     buildCommand: |
       pip install --upgrade pip
+      # Ensure critical build dependencies are installed first to avoid Cython/scikit-learn errors
+      pip install numpy==1.24.3 pandas==2.0.3 cython==0.29.36
       pip install -r requirements.txt
-    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    
+    # Use Gunicorn for robust production deployment
+    startCommand: gunicorn api:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7 # Enforce the stable Python version from runtime.txt
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
