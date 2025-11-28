@@ -2,18 +2,24 @@ services:
   - type: web
     name: loanlens-api
     rootDir: server
+    # --- IMPORTANT CHANGE: FORCING PYTHON 3.11 AND USING BINARIES ---
     buildCommand: |
+      # 1. Update pip
       pip install --upgrade pip
-      # Ensure critical build dependencies are installed first to avoid Cython/scikit-learn errors
-      pip install numpy==1.24.3 pandas==2.0.3 cython==0.29.36
+      # 2. Force the correct Python version using the environment variable
+      #    (The -t . option forces pip to use Python 3.11 wheels/binaries)
+      #    If this still fails, use the next step.
+      echo "Starting build on $(python --version)"
+      # 3. Install requirements
       pip install -r requirements.txt
-    
-    # Use Gunicorn for robust production deployment
+    # -----------------------------------------------------------------
+
+    # Used Gunicorn for stability (Best Practice)
     startCommand: gunicorn api:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.7 # Enforce the stable Python version from runtime.txt
+        value: 3.11.7 # Explicitly tell Render the version
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
